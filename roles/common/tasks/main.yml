@@ -1,0 +1,5 @@
+---
+- name: "Apt Update"
+  action: apt update_cache=yes 
+
+- include: jdk.yml

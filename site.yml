@@ -1,0 +1,13 @@
+- hosts: srv01
+  roles:
+    - common 
+    - postgres
+    - role: gerrit 
+      gerrit_home: "/opt/gerrit" 
+      plsql_user: "postgres" 
+      db_user: "gerrit"
+      db_name: "gerritdb" 
+      db_password: "gerritpass"  
+      unix_user: "gerrit"
+    
+    

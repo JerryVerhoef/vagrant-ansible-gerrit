@@ -1,0 +1,44 @@
+---
+  
+- name: Install Gerrit required  packages
+  action: apt name={{item}}
+  with_items:
+      - git
+        
+- name: ensure database is created
+  action: postgresql_db db={{db_name}}
+  sudo: yes
+  sudo_user: ${plsql_user}
+     
+- name: ensure user has access to database
+  action: postgresql_user db={{db_name}} user={{db_user}} password={{db_password}} priv=ALL
+  sudo: yes
+  sudo_user: ${plsql_user}
+
+- name: ensure user does not have unnecessary privilege
+  action: postgresql_user user={{db_user}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+  sudo: yes
+  sudo_user: ${plsql_user}
+  
+- name: Create Gerrit User
+  user: name=${unix_user} state=present
+
+
+- name: Create gerrit Home
+  file: path=${gerrit_home} owner=${unix_user} group=${unix_user} mode=0764 state=directory
+  
+- name: Copy the gerrit.war
+  sudo: yes
+  sudo_user: ${unix_user}
+  copy: src=gerrit-2.5.6.war dest=${gerrit_home}/gerrit.war
+
+- name: init the gerrit
+  sudo: yes
+  sudo_user: ${unix_user}
+  command: chdir=${gerrit_home} java -jar gerrit.war init -d ${gerrit_home}
+
+
+- name: Create Gerrit.conf
+  sudo: yes
+  sudo_user: ${unix_user}
+  template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config  

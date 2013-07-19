@@ -1,0 +1,17 @@
+---
+- name: intall appt_add_repository
+  action: apt pkg=python-software-properties state=installed
+ 
+- name: install java ppa 
+  action: apt_repository repo=ppa:webupd8team/java
+ 
+- name: Accept java license  Step 1
+  action: shell echo debconf shared/accepted-oracle-license-v1-1 select true >  /root/l1 
+- action: shell  debconf-set-selections < /root/l1
+ 
+- name: Accept java license  Step 2
+  action: shell echo "debconf shared/accepted-oracle-license-v1-1 seen true" > /root/l2
+- action: shell debconf-set-selections < /root/l2
+ 
+- name: Install jdk pkg
+  action: apt pkg=oracle-java7-installer state=present

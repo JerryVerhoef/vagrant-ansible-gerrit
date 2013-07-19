@@ -1,0 +1,10 @@
+---
+- hosts: vagrant-vms
+  user: vagrant
+  vars:
+      keyfile: /vagrant/admin.pub
+  tasks:
+  - name: install ssh key to root
+    sudo: true
+    authorized_key: user=root key="{{ lookup('file', 'admin.pub') }}"
+    
