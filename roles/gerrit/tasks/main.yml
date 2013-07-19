@@ -37,8 +37,19 @@
   sudo_user: ${unix_user}
   command: chdir=${gerrit_home} java -jar gerrit.war init -d ${gerrit_home}
 
+- name: Setup as service
+  file: src={{gerrit_home}}/bin/gerrit.sh dest=/etc/init.d/gerrit state=link
 
+- name: Setup as boot service
+  service: name=gerrit enabled=yes
+
+- name: setup gerrit home  in tc
+  lineinfile: dest=/etc/default/gerritcodereview create=yes state=present regexp="GERRIT_SITE=" line="GERRIT_SITE={{gerrit_home}}"
+   
 - name: Create Gerrit.conf
   sudo: yes
   sudo_user: ${unix_user}
-  template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config  
+  template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config
+  notify:
+    -  restart gerrit
+  
