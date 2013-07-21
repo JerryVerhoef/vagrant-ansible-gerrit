@@ -1,8 +1,17 @@
-- hosts: srv01
+- hosts: gerrit*
+  user: root
+  gather_facts: no
+  tasks: 
+    - add_host: name={{inventory_hostname}} groups=gerrit-servers 
+  
+
+- hosts: gerrit-servers
+  user: root
   roles:
     - common 
     - postgres
     - role: gerrit 
+      database_server: localhost
       gerrit_home: "/opt/gerrit" 
       plsql_user: "postgres" 
       db_user: "gerrit"

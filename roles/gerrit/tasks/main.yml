@@ -1,10 +1,6 @@
 ---
   
-- name: Install Gerrit required  packages
-  action: apt name={{item}}
-  with_items:
-      - git
-        
+
 - name: ensure database is created
   action: postgresql_db db={{db_name}}
   sudo: yes
@@ -20,6 +16,11 @@
   sudo: yes
   sudo_user: ${plsql_user}
   
+- name: Install Gerrit required  packages
+  action: apt name={{item}}
+  with_items:
+      - git
+      
 - name: Create Gerrit User
   user: name=${unix_user} state=present
 
@@ -41,8 +42,8 @@
   file: src={{gerrit_home}}/bin/gerrit.sh dest=/etc/init.d/gerrit state=link
 
 - name: Setup as boot service
-  service: name=gerrit enabled=yes
-
+  service: name=gerrit enabled=yes state=started
+ 
 - name: setup gerrit home  in tc
   lineinfile: dest=/etc/default/gerritcodereview create=yes state=present regexp="GERRIT_SITE=" line="GERRIT_SITE={{gerrit_home}}"
    
