@@ -1,9 +1,9 @@
 vagrant-ansible-gerrit
 ======================
 
-A an ansible playbook to install gerrit . A lot of work to be done.
-No production ready yet!!!
+A an ansible playbook to install gerrit.
 
-Put your public ssh key in admin.pub to intall it on the vagrant servers
+Clean simple setup of gerrit with vagrant and ansible. Still a work-in-progress
+Btw. this is my first ansible script so beware!!
 
 
