@@ -1,7 +1,3 @@
 ---
-- name: Install Postgreslq packages
-  action: apt name={{item}}
-  with_items:
-      - postgresql
-      - libpq-dev
-      - python-psycopg2
+- include: install_postgres.yml
+- include: config_postgre.yml
