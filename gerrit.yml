@@ -1,0 +1,15 @@
+- hosts: all
+  user: vagrant
+  sudo: yes
+  vars:
+   database_server: localhost
+   gerrit_home: "/opt/gerrit"
+   plsql_user: "postgres"
+   db_user: "gerrit"
+   db_name: "gerritdb"
+   db_password: "gerritpass"
+   unix_user: "gerrit"
+  roles:
+    - common
+    - postgres
+    - role: gerrit
