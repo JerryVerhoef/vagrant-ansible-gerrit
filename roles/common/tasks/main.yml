@@ -1,5 +1,5 @@
 ---
 - name: "Apt Update"
-  action: apt update_cache=yes 
+  apt: update_cache=yes upgrade=dist
 
 - include: jdk.yml
