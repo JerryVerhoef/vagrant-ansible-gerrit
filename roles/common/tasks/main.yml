@@ -1,5 +1,8 @@
 ---
-- name: "Apt Update"
-  apt: update_cache=yes upgrade=dist
+#- name: "Apt Update"
+  #apt: update_cache=yes upgrade=dist cache_valid_time=3600
+
+- name: Install python-pycurl
+  apt: pkg=python-pycurl state=present
 
 - include: jdk.yml

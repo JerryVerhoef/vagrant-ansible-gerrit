@@ -1,9 +1,20 @@
 ---
 
 - name: Add launchpad repo
-  apt_repository: repo='ppa:webupd8team/java'
-  notify:
-    - update apt repository
+  apt_repository: repo='ppa:webupd8team/java' update_cache=yes
+
+- name: Autoaccept license for Java
+  action: shell echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+
+
+- name: Accept license for Oracle Java 7
+  sudo: yes
+  command: echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections creates=/tmp/accepted-oracle_license
+
+- name: Accept license for Oracle Java 7 part 2
+  sudo: yes
+  command: echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections creates=/tmp/accepted-oracle_license_part2
+
 - name: Make sure Oracle Java 7 JDK is installed
   apt: pkg={{ item }}
   with_items:
