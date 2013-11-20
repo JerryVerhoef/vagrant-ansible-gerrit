@@ -3,6 +3,7 @@
   sudo: yes
   vars:
    database_server: localhost
+   gerrit_download_link: "http://gerrit-releases.storage.googleapis.com/gerrit-2.7.war"
    gerrit_home: "/opt/gerrit"
    plsql_user: "postgres"
    db_user: "gerrit"
@@ -13,3 +14,4 @@
     - common
     - postgres
     - role: gerrit
+
