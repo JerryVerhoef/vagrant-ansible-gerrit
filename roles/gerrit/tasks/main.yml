@@ -1,37 +1,29 @@
 ---
-  
 
-- name: ensure database is created
-  action: postgresql_db db={{db_name}}
-  sudo: yes
-  sudo_user: ${plsql_user}
-     
-- name: ensure user has access to database
-  action: postgresql_user db={{db_name}} user={{db_user}} password={{db_password}} priv=ALL
-  sudo: yes
-  sudo_user: ${plsql_user}
-
-- name: ensure user does not have unnecessary privilege
-  action: postgresql_user user={{db_user}} role_attr_flags=NOSUPERUSER,NOCREATEDB
-  sudo: yes
-  sudo_user: ${plsql_user}
-  
 - name: Install Gerrit required  packages
   action: apt name={{item}}
   with_items:
       - git
-      
+
 - name: Create Gerrit User
-  user: name=${unix_user} state=present
+  user: name={{unix_user}} state=present
 
+- name: Create a nice and warm home for Gerrit
+  file: path={{gerrit_home}} owner=${unix_user} group=${unix_user} mode=0750 state=directory
 
-- name: Create gerrit Home
-  file: path=${gerrit_home} owner=${unix_user} group=${unix_user} mode=0764 state=directory
-  
-- name: Copy the gerrit.war
+- name: fetch Gerrit from googlecode
+  sudo_user: ${unix_user}
+  get_url: url={{gerrit_download_link}} dest={{gerrit_home}}/gerrit.war mode=07500
+
+- name: init the gerrit
   sudo: yes
   sudo_user: ${unix_user}
-  copy: src=gerrit-2.5.6.war dest=${gerrit_home}/gerrit.war
+  command: chdir=${gerrit_home} java -jar gerrit.war init -d ${gerrit_home}
+
+- name: Create Gerrit.conf
+  sudo: yes
+  sudo_user: ${unix_user}
+  template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config
 
 - name: init the gerrit
   sudo: yes
@@ -41,16 +33,17 @@
 - name: Setup as service
   file: src={{gerrit_home}}/bin/gerrit.sh dest=/etc/init.d/gerrit state=link
 
+- name: setup gerrit home  in tc
+  lineinfile: dest=/etc/default/gerritcodereview
+              create=yes
+              state=present
+              regexp="GERRIT_SITE="
+              line="GERRIT_SITE={{gerrit_home}}"
+              owner=${unix_user}
+              group=${unix_user}
+              mode=0644
+
 - name: Setup as boot service
   service: name=gerrit enabled=yes state=started
  
-- name: setup gerrit home  in tc
-  lineinfile: dest=/etc/default/gerritcodereview create=yes state=present regexp="GERRIT_SITE=" line="GERRIT_SITE={{gerrit_home}}"
-   
-- name: Create Gerrit.conf
-  sudo: yes
-  sudo_user: ${unix_user}
-  template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config
-  notify:
-    -  restart gerrit
-  
+
