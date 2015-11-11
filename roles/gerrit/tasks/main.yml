@@ -9,26 +9,26 @@
   user: name={{unix_user}} state=present
 
 - name: Create a nice and warm home for Gerrit
-  file: path={{gerrit_home}} owner=${unix_user} group=${unix_user} mode=0750 state=directory
+  file: path={{gerrit_home}} owner="{{ unix_user }}" group="{{ unix_user }}" mode=0750 state=directory
 
 - name: fetch Gerrit from googlecode
-  sudo_user: ${unix_user}
+  sudo_user: "{{ unix_user }}"
   get_url: url={{gerrit_download_link}} dest={{gerrit_home}}/gerrit.war mode=07500
 
 - name: init the gerrit
   sudo: yes
-  sudo_user: ${unix_user}
-  command: chdir=${gerrit_home} java -jar gerrit.war init -d ${gerrit_home}
+  sudo_user: "{{ unix_user }}"
+  command: chdir="{{ gerrit_home }}" java -jar gerrit.war init -d "{{ gerrit_home }}"
 
 - name: Create Gerrit.conf
   sudo: yes
-  sudo_user: ${unix_user}
+  sudo_user: "{{ unix_user }}"
   template: src=gerrit.config dest={{gerrit_home}}/etc/gerrit.config
 
 - name: init the gerrit
   sudo: yes
-  sudo_user: ${unix_user}
-  command: chdir=${gerrit_home} java -jar gerrit.war init -d ${gerrit_home}
+  sudo_user: "{{ unix_user }}"
+  command: chdir="{{ gerrit_home }}" java -jar gerrit.war init -d "{{ gerrit_home }}"
 
 - name: Setup as service
   file: src={{gerrit_home}}/bin/gerrit.sh dest=/etc/init.d/gerrit state=link
@@ -39,8 +39,8 @@
               state=present
               regexp="GERRIT_SITE="
               line="GERRIT_SITE={{gerrit_home}}"
-              owner=${unix_user}
-              group=${unix_user}
+              owner="{{ unix_user }}"
+              group="{{ unix_user }}"
               mode=0644
 
 - name: Setup as boot service
